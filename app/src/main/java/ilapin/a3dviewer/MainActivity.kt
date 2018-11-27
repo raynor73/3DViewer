@@ -1,11 +1,14 @@
 package ilapin.a3dviewer
 
+import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var glView: GLSurfaceView
 
     private var isFullscreen = true
 
@@ -15,6 +18,12 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
+        glView = GLSurfaceView(this)
+        glView.setEGLContextClientVersion(2)
+        glView.setRenderer(GlRenderer())
+        glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+        container.addView(glView, 0)
+
         container.setOnClickListener { toggleFullscreen() }
     }
 
@@ -23,6 +32,8 @@ class MainActivity : AppCompatActivity() {
 
         if (isFullscreen) {
             hideControls()
+        } else {
+            showControls()
         }
     }
 
