@@ -1,0 +1,3 @@
+package ilapin.a3dengine
+
+interface SceneObjectComponent

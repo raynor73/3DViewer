@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
 
         glView = GLSurfaceView(this)
         glView.setEGLContextClientVersion(2)
-        glView.setRenderer(GlRenderer())
+        glView.setRenderer(GLSurfaceViewRenderer())
         glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
         container.addView(glView, 0)
 
