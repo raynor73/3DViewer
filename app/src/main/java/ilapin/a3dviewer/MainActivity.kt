@@ -4,6 +4,7 @@ import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -21,6 +22,10 @@ class MainActivity : AppCompatActivity() {
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
             glView = GLSurfaceView(this)
+            glView.setOnTouchListener { _, event ->
+                Log.d("!@#", "Event: ${event.x}; ${event.y}")
+                true
+            }
             glView.setEGLContextClientVersion(2)
             glView.setRenderer(GLSurfaceViewRenderer())
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
