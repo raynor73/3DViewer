@@ -1,3 +1,6 @@
 package ilapin.a3dengine
 
-interface SceneObjectComponent
+abstract class SceneObjectComponent {
+
+    var sceneObject: SceneObject? = null
+}

@@ -1,5 +1,6 @@
 package ilapin.a3dviewer
 
+import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -18,11 +19,13 @@ class MainActivity : AppCompatActivity() {
 
         setSupportActionBar(toolbar)
 
-        glView = GLSurfaceView(this)
-        glView.setEGLContextClientVersion(2)
-        glView.setRenderer(GLSurfaceViewRenderer())
-        glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
-        container.addView(glView, 0)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            glView = GLSurfaceView(this)
+            glView.setEGLContextClientVersion(2)
+            glView.setRenderer(GLSurfaceViewRenderer())
+            glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
+            container.addView(glView, 0)
+        }
 
         container.setOnClickListener { toggleFullscreen() }
     }
