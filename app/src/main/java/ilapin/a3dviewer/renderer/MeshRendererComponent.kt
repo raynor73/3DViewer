@@ -1,10 +1,8 @@
 package ilapin.a3dviewer.renderer
 
 import android.opengl.GLES20
-import ilapin.a3dengine.CameraComponent
-import ilapin.a3dengine.MaterialComponent
-import ilapin.a3dengine.MeshComponent
-import ilapin.a3dengine.SceneObjectComponent
+import ilapin.a3dengine.*
+import org.joml.Matrix4f
 import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -23,12 +21,15 @@ class MeshRendererComponent(
     private var cachedIndexBuffer: Buffer? = null
     private var cachedNumberOfIndices: Int? = null
 
+    private val mvpMatrix = Matrix4f()
+
     private val colorFloatArray = FloatArray(4)
     private val mvpMatrixFloatArray = FloatArray(16)
 
     fun render() {
         val material = sceneObject?.getComponent(MaterialComponent::class.java) ?: return
-        val mvpMatrix = cameraProvider.invoke()?.getViewProjectionMatrix() ?: return
+        val transformation = sceneObject?.getComponent(TransformationComponent::class.java) ?: return
+        val viewProjectionMatrix = cameraProvider.invoke()?.getViewProjectionMatrix() ?: return
 
         if (cachedVertexBuffer == null) {
             val mesh = sceneObject?.getComponent(MeshComponent::class.java) ?: return
@@ -96,6 +97,8 @@ class MeshRendererComponent(
             }
 
             GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
+                viewProjectionMatrix.get(mvpMatrix)
+                mvpMatrix.translate(transformation.getPosition())
                 mvpMatrix.get(mvpMatrixFloatArray)
                 GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
             }

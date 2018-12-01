@@ -58,14 +58,14 @@ class GLSurfaceViewRenderer : GLSurfaceView.Renderer {
         triangleObject.addComponent(
             MeshComponent(
                 listOf(
-                    Vector3f(0f, 0.5f, 1f),
-                    Vector3f(-0.5f, -0.5f, 1f),
-                    Vector3f(0.5f, -0.5f, 1f)
+                    Vector3f(0f, 0.5f, 0f),
+                    Vector3f(-0.5f, -0.5f, 0f),
+                    Vector3f(0.5f, -0.5f, 0f)
                 ),
                 listOf(0, 1, 2)
             )
         )
-
+        triangleObject.addComponent(TransformationComponent(Vector3f(0f, 0f, 1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
         val meshRenderer = MeshRendererComponent(Shader(vertexShaderCode, fragmentShaderCode)) { camera }
         meshRenderers += meshRenderer
         triangleObject.addComponent(meshRenderer)
