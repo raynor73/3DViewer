@@ -28,6 +28,12 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
             val vertexCount = mesh.vertices.size
             cachedNumberOfVertices = vertexCount
             val verticesFloatArray = FloatArray(vertexCount * COORDINATES_PER_VERTEX)
+            for (i in 0 until vertexCount) {
+                val vertex = mesh.vertices[i]
+                verticesFloatArray[i * COORDINATES_PER_VERTEX] = vertex.x
+                verticesFloatArray[i * COORDINATES_PER_VERTEX + 1] = vertex.y
+                verticesFloatArray[i * COORDINATES_PER_VERTEX + 2] = vertex.z
+            }
             cachedVertexBuffer = ByteBuffer.allocateDirect(verticesFloatArray.size * BYTES_PER_FLOAT).run {
                 order(ByteOrder.nativeOrder())
                 asFloatBuffer().apply {
