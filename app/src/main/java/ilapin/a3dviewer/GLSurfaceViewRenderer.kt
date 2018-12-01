@@ -42,11 +42,16 @@ class GLSurfaceViewRenderer : GLSurfaceView.Renderer {
         GLES20.glViewport(0, 0, width, height)
 
         val triangle = SceneObject()
-        triangle.addComponent(MeshComponent(listOf(
-            Vector3f(0f, 0.5f, 0f),
-            Vector3f(-0.5f, -0.5f, 0f),
-            Vector3f(0.5f, -0.5f, 0f)
-        )))
+        triangle.addComponent(
+            MeshComponent(
+                listOf(
+                    Vector3f(0f, 0.5f, 0f),
+                    Vector3f(-0.5f, -0.5f, 0f),
+                    Vector3f(0.5f, -0.5f, 0f)
+                ),
+                listOf(0, 1, 2)
+            )
+        )
         val meshRenderer = MeshRendererComponent(Shader(vertexShaderCode, fragmentShaderCode))
         meshRenderers += meshRenderer
         triangle.addComponent(meshRenderer)

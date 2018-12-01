@@ -16,7 +16,8 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
     }
 
     private var cachedVertexBuffer: Buffer? = null
-    private var cachedNumberOfVertices: Int? = null
+    private var cachedIndexBuffer: Buffer? = null
+    private var cachedNumberOfIndices: Int? = null
 
     private val colorFloatArray = FloatArray(4)
 
@@ -25,10 +26,11 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
 
         if (cachedVertexBuffer == null) {
             val mesh = sceneObject?.getComponent(MeshComponent::class.java) ?: return
-            val vertexCount = mesh.vertices.size
-            cachedNumberOfVertices = vertexCount
-            val verticesFloatArray = FloatArray(vertexCount * COORDINATES_PER_VERTEX)
-            for (i in 0 until vertexCount) {
+            val numberOfVertices = mesh.vertices.size
+            val numberOfIndices = mesh.indices.size
+
+            val verticesFloatArray = FloatArray(numberOfVertices * COORDINATES_PER_VERTEX)
+            for (i in 0 until numberOfVertices) {
                 val vertex = mesh.vertices[i]
                 verticesFloatArray[i * COORDINATES_PER_VERTEX] = vertex.x
                 verticesFloatArray[i * COORDINATES_PER_VERTEX + 1] = vertex.y
@@ -41,9 +43,24 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
                     position(0)
                 }
             }
+
+            cachedNumberOfIndices = numberOfIndices
+
+            val indicesShortArray = ShortArray(numberOfIndices)
+            for (i in 0 until numberOfVertices) {
+                indicesShortArray[i] = mesh.indices[i].toShort()
+            }
+            cachedIndexBuffer = ByteBuffer.allocateDirect(numberOfIndices * BYTES_PER_SHORT).run {
+                order(ByteOrder.nativeOrder())
+                asShortBuffer().apply {
+                    put(indicesShortArray)
+                    position(0)
+                }
+            }
         }
         val vertexBuffer = cachedVertexBuffer ?: return
-        val numberOfVertices = cachedNumberOfVertices ?: return
+        val indexBuffer = cachedIndexBuffer ?: return
+        val numberOfIndices = cachedNumberOfIndices ?: return
 
         GLES20.glUseProgram(shader.program)
 
@@ -73,7 +90,7 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
             }
 
             // Draw the triangle
-            GLES20.glDrawArrays(GLES20.GL_TRIANGLES, 0, numberOfVertices)
+            GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
 
             // Disable vertex array
             GLES20.glDisableVertexAttribArray(positionHandle)
