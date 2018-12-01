@@ -1,6 +1,7 @@
 package ilapin.a3dviewer.renderer
 
 import android.opengl.GLES20
+import ilapin.a3dengine.CameraComponent
 import ilapin.a3dengine.MaterialComponent
 import ilapin.a3dengine.MeshComponent
 import ilapin.a3dengine.SceneObjectComponent
@@ -8,7 +9,10 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent() {
+class MeshRendererComponent(
+    private val shader: Shader,
+    private val cameraProvider: () -> CameraComponent?
+) : SceneObjectComponent() {
 
     companion object {
 
@@ -20,9 +24,11 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
     private var cachedNumberOfIndices: Int? = null
 
     private val colorFloatArray = FloatArray(4)
+    private val mvpMatrixFloatArray = FloatArray(16)
 
     fun render() {
         val material = sceneObject?.getComponent(MaterialComponent::class.java) ?: return
+        val mvpMatrix = cameraProvider.invoke()?.getViewProjectionMatrix() ?: return
 
         if (cachedVertexBuffer == null) {
             val mesh = sceneObject?.getComponent(MeshComponent::class.java) ?: return
@@ -87,6 +93,11 @@ class MeshRendererComponent(private val shader: Shader) : SceneObjectComponent()
                 colorFloatArray[2] = ((material.color ushr 8) and 0xff) / 255f
                 colorFloatArray[3] = (material.color and 0xff) / 255f
                 GLES20.glUniform4fv(colorHandle, 1, colorFloatArray, 0)
+            }
+
+            GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
+                mvpMatrix.get(mvpMatrixFloatArray)
+                GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
             }
 
             // Draw the triangle
