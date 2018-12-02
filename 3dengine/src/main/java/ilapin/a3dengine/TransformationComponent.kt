@@ -13,6 +13,10 @@ class TransformationComponent(
 
     fun getPosition(): Vector3fc = position
 
+    fun setPosition(position: Vector3fc) {
+        //this.position
+    }
+
     fun getRotation(): Quaternionfc = rotation
 
     fun getScale(): Vector3fc = scale
