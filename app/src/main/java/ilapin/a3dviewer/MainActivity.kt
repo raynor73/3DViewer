@@ -1,10 +1,14 @@
 package ilapin.a3dviewer
 
+import android.annotation.SuppressLint
 import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.os.Bundle
+import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -14,6 +18,7 @@ class MainActivity : AppCompatActivity() {
 
     private var isFullscreen = true
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -21,9 +26,22 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
+
+                override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
+                    val normalizedDistanceX = distanceX / glView.width * 2 - 1
+                    val normalizedDistanceY = distanceY / glView.height * 2 - 1
+                    return true
+                }
+
+                override fun onSingleTapUp(e: MotionEvent?): Boolean {
+                    toggleFullscreen()
+                    return true
+                }
+            })
             glView = GLSurfaceView(this)
             glView.setOnTouchListener { _, event ->
-                Log.d("!@#", "Event: ${event.x}; ${event.y}")
+                gestureDetector.onTouchEvent(event)
                 true
             }
             glView.setEGLContextClientVersion(2)
@@ -31,8 +49,6 @@ class MainActivity : AppCompatActivity() {
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             container.addView(glView, 0)
         }
-
-        container.setOnClickListener { toggleFullscreen() }
     }
 
     override fun onResume() {
