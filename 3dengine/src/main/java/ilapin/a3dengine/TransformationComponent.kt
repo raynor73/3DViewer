@@ -14,7 +14,7 @@ class TransformationComponent(
     fun getPosition(): Vector3fc = position
 
     fun setPosition(position: Vector3fc) {
-        //this.position
+        this.position.set(position)
     }
 
     fun getRotation(): Quaternionfc = rotation
