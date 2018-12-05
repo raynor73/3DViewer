@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
                     val normalizedDistanceX = distanceX / glView.width * 2
                     val normalizedDistanceY = distanceY / glView.height * 2
                     renderer.controller.queue.put(
-                        TouchScreenController.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
+                        TouchScreenController.TouchEvent.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
                     )
                     return true
                 }
@@ -45,13 +45,17 @@ class MainActivity : AppCompatActivity() {
             })
             val scaleGestureDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
-                override fun onScale(detector: ScaleGestureDetector?): Boolean {
-                    return super.onScale(detector)
+                override fun onScale(detector: ScaleGestureDetector): Boolean {
+                    renderer.controller.queue.put(
+                        TouchScreenController.TouchEvent.ScaleEvent(detector.scaleFactor)
+                    )
+                    return true
                 }
             })
             glView = GLSurfaceView(this)
             glView.setOnTouchListener { _, event ->
                 gestureDetector.onTouchEvent(event)
+                scaleGestureDetector.onTouchEvent(event)
                 true
             }
             glView.setEGLContextClientVersion(2)

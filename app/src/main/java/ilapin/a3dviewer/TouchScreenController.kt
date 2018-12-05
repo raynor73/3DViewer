@@ -1,6 +1,7 @@
 package ilapin.a3dviewer
 
 import android.renderscript.Matrix4f
+import android.util.Log
 import ilapin.a3dengine.PerspectiveCameraComponent
 import ilapin.a3dengine.SceneObject
 import ilapin.a3dengine.TransformationComponent
@@ -9,18 +10,38 @@ import java.util.concurrent.LinkedBlockingQueue
 
 class TouchScreenController {
 
-    val queue = LinkedBlockingQueue<ScrollEvent>()
+    val queue = LinkedBlockingQueue<TouchEvent>()
 
     var currentCamera: SceneObject? = null
+    var currentExposedObject: SceneObject? = null
 
     private val invertedViewProjectionMatrix = Matrix4f()
+
     private val position = Vector3f()
+    private val scale = Vector3f()
+
+    private var scaleFactor = 1f
 
     fun update() {
         while (queue.size != 0) {
             val event = queue.take()
-            onScroll(event.normalizedDistanceX, event.normalizedDistanceY)
+            when (event) {
+                is TouchEvent.ScrollEvent -> onScroll(event.normalizedDistanceX, event.normalizedDistanceY)
+                is TouchEvent.ScaleEvent -> onScale(event.scaleFactor)
+            }
         }
+    }
+
+    private fun onScale(newScaleFactor: Float) {
+        scaleFactor *= newScaleFactor
+        scaleFactor = Math.max(0.1f, Math.min(scaleFactor, 10.0f))
+        Log.d("!@#", "Scale : $scaleFactor")
+
+        val exposedObject = currentExposedObject ?: return
+        val exposedObjectTransformation = exposedObject.getComponent(TransformationComponent::class.java) ?: return
+
+        scale.set(scaleFactor, scaleFactor, scaleFactor)
+        exposedObjectTransformation.setScale(scale)
     }
 
     private fun onScroll(normalizedDistanceX: Float, normalizedDistanceY: Float) {
@@ -34,5 +55,8 @@ class TouchScreenController {
         cameraTransformation.setPosition(position)
     }
 
-    class ScrollEvent(val normalizedDistanceX: Float, val normalizedDistanceY: Float)
+    sealed class TouchEvent {
+        class ScrollEvent(val normalizedDistanceX: Float, val normalizedDistanceY: Float) : TouchEvent()
+        class ScaleEvent(val scaleFactor: Float) : TouchEvent()
+    }
 }

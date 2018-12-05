@@ -78,5 +78,6 @@ class GLSurfaceViewRenderer : GLSurfaceView.Renderer {
         scene.rootObject = rootObject
 
         controller.currentCamera = cameraObject
+        controller.currentExposedObject = triangleObject
     }
 }

@@ -99,6 +99,7 @@ class MeshRendererComponent(
             GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
                 viewProjectionMatrix.get(mvpMatrix)
                 mvpMatrix.translate(transformation.getPosition())
+                mvpMatrix.scale(transformation.getScale())
                 mvpMatrix.get(mvpMatrixFloatArray)
                 GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
             }

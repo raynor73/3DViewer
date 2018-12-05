@@ -20,4 +20,8 @@ class TransformationComponent(
     fun getRotation(): Quaternionfc = rotation
 
     fun getScale(): Vector3fc = scale
+
+    fun setScale(scale: Vector3fc) {
+        this.scale.set(scale)
+    }
 }
