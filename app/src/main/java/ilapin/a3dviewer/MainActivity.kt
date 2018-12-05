@@ -6,7 +6,6 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
-import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
@@ -26,11 +25,15 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            val renderer = GLSurfaceViewRenderer()
             val gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
 
                 override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                     val normalizedDistanceX = distanceX / glView.width * 2 - 1
                     val normalizedDistanceY = distanceY / glView.height * 2 - 1
+                    renderer.controller.queue.put(
+                        TouchScreenController.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
+                    )
                     return true
                 }
 
@@ -45,7 +48,7 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             glView.setEGLContextClientVersion(2)
-            glView.setRenderer(GLSurfaceViewRenderer())
+            glView.setRenderer(renderer)
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             container.addView(glView, 0)
         }

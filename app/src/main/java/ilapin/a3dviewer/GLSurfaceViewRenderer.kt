@@ -32,8 +32,11 @@ class GLSurfaceViewRenderer : GLSurfaceView.Renderer {
         }
     """.trimIndent()
 
+    val controller = TouchScreenController()
+
     override fun onDrawFrame(gl: GL10) {
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        controller.update()
         scene.update()
         meshRenderers.forEach { it.render() }
     }
@@ -73,5 +76,7 @@ class GLSurfaceViewRenderer : GLSurfaceView.Renderer {
         rootObject.addChild(triangleObject)
 
         scene.rootObject = rootObject
+
+        controller.currentCamera = cameraObject
     }
 }
