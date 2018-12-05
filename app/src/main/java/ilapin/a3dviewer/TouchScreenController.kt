@@ -30,6 +30,7 @@ class TouchScreenController {
 
         position.set(cameraTransformation.getPosition())
         position.x -= normalizedDistanceX
+        position.y -= normalizedDistanceY
         cameraTransformation.setPosition(position)
     }
 

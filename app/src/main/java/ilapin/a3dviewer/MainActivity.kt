@@ -29,8 +29,8 @@ class MainActivity : AppCompatActivity() {
             val gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
 
                 override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    val normalizedDistanceX = distanceX / glView.width * 2 - 1
-                    val normalizedDistanceY = distanceY / glView.height * 2 - 1
+                    val normalizedDistanceX = distanceX / glView.width * 2
+                    val normalizedDistanceY = distanceY / glView.height * 2
                     renderer.controller.queue.put(
                         TouchScreenController.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
                     )
