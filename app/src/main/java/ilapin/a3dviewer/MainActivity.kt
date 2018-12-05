@@ -8,6 +8,7 @@ import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.GestureDetector
 import android.view.MotionEvent
+import android.view.ScaleGestureDetector
 import android.view.View
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -40,6 +41,12 @@ class MainActivity : AppCompatActivity() {
                 override fun onSingleTapUp(e: MotionEvent?): Boolean {
                     toggleFullscreen()
                     return true
+                }
+            })
+            val scaleGestureDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
+
+                override fun onScale(detector: ScaleGestureDetector?): Boolean {
+                    return super.onScale(detector)
                 }
             })
             glView = GLSurfaceView(this)
