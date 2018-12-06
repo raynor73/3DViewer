@@ -100,6 +100,7 @@ class MeshRendererComponent(
                 viewProjectionMatrix.get(mvpMatrix)
                 mvpMatrix.translate(transformation.getPosition())
                 mvpMatrix.scale(transformation.getScale())
+                mvpMatrix.rotate(transformation.getRotation())
                 mvpMatrix.get(mvpMatrixFloatArray)
                 GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
             }

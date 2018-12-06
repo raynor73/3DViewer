@@ -43,12 +43,17 @@ class MainActivity : AppCompatActivity() {
                     return true
                 }
             })
+            gestureDetector.setIsLongpressEnabled(false)
+            val longPressGestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
+                override fun onLongPress(e: MotionEvent?) {
+                    renderer.controller.queue.put(TouchScreenController.TouchEvent.LongPressEvent)
+                }
+            })
+            //gestureDetector.setOnDoubleTapListener(object : GestureDetector.OnDoubleTapListener {})
             val scaleGestureDetector = ScaleGestureDetector(this, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
 
                 override fun onScale(detector: ScaleGestureDetector): Boolean {
-                    renderer.controller.queue.put(
-                        TouchScreenController.TouchEvent.ScaleEvent(detector.scaleFactor)
-                    )
+                    renderer.controller.queue.put(TouchScreenController.TouchEvent.ScaleEvent(detector.scaleFactor))
                     return true
                 }
             })
@@ -56,6 +61,12 @@ class MainActivity : AppCompatActivity() {
             glView.setOnTouchListener { _, event ->
                 gestureDetector.onTouchEvent(event)
                 scaleGestureDetector.onTouchEvent(event)
+                longPressGestureDetector.onTouchEvent(event)
+                when (event.action) {
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        renderer.controller.queue.put(TouchScreenController.TouchEvent.TerminalEvent)
+                    }
+                }
                 true
             }
             glView.setEGLContextClientVersion(2)
