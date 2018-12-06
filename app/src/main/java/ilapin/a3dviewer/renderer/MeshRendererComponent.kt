@@ -7,10 +7,7 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class MeshRendererComponent(
-    private val shader: Shader,
-    private val cameraProvider: () -> CameraComponent?
-) : SceneObjectComponent() {
+class MeshRendererComponent(private val cameraProvider: () -> CameraComponent?) : SceneObjectComponent() {
 
     companion object {
 
@@ -21,12 +18,15 @@ class MeshRendererComponent(
     private var cachedIndexBuffer: Buffer? = null
     private var cachedNumberOfIndices: Int? = null
 
+    var currentShader: Shader? = null
+
     private val mvpMatrix = Matrix4f()
 
     private val colorFloatArray = FloatArray(4)
     private val mvpMatrixFloatArray = FloatArray(16)
 
     fun render() {
+        val shader = currentShader ?: return
         val material = sceneObject?.getComponent(MaterialComponent::class.java) ?: return
         val transformation = sceneObject?.getComponent(TransformationComponent::class.java) ?: return
         val viewProjectionMatrix = cameraProvider.invoke()?.getViewProjectionMatrix() ?: return
@@ -87,12 +87,12 @@ class MeshRendererComponent(
             )
 
             // get handle to fragment shader's vColor member
-            GLES20.glGetUniformLocation(shader.program, "colorUniform").also { colorHandle ->
+            GLES20.glGetUniformLocation(shader.program, "diffuseColorUniform").also { colorHandle ->
                 // Set color for drawing the triangle
-                colorFloatArray[0] = (material.color ushr 24) / 255f
-                colorFloatArray[1] = ((material.color ushr 16) and 0xff) / 255f
-                colorFloatArray[2] = ((material.color ushr 8) and 0xff) / 255f
-                colorFloatArray[3] = (material.color and 0xff) / 255f
+                colorFloatArray[0] = (material.diffuseColorUniform ushr 24) / 255f
+                colorFloatArray[1] = ((material.diffuseColorUniform ushr 16) and 0xff) / 255f
+                colorFloatArray[2] = ((material.diffuseColorUniform ushr 8) and 0xff) / 255f
+                colorFloatArray[3] = (material.diffuseColorUniform and 0xff) / 255f
                 GLES20.glUniform4fv(colorHandle, 1, colorFloatArray, 0)
             }
 

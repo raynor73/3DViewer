@@ -1,3 +1,3 @@
 package ilapin.a3dengine
 
-class MaterialComponent(val color: Int) : SceneObjectComponent()
+class MaterialComponent(val diffuseColorUniform: Int) : SceneObjectComponent()
