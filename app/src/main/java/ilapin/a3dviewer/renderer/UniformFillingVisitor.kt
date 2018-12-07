@@ -11,7 +11,7 @@ class UniformFillingVisitor {
 
     private val colorFloatArray = FloatArray(4)
 
-    fun visit(shader: AmbientShader) {
+    fun visitAmbientShader(shader: Shader) {
         val material = currentMaterial ?: return
         val ambientColor = currentAmbientColor ?: return
 
@@ -33,7 +33,7 @@ class UniformFillingVisitor {
         }
     }
 
-    fun visit(shader: Shader) {
+    fun visitShader(shader: Shader) {
         val material = currentMaterial ?: return
 
         // get handle to fragment shader's vColor member

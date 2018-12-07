@@ -4,10 +4,7 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import ilapin.a3dengine.*
-import ilapin.a3dviewer.renderer.AmbientShader
-import ilapin.a3dviewer.renderer.MeshRendererComponent
-import ilapin.a3dviewer.renderer.Shader
-import ilapin.a3dviewer.renderer.UniformFillingVisitor
+import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import javax.microedition.khronos.egl.EGLConfig
@@ -40,7 +37,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         }
     """.trimIndent()
 
-    private var ambientShader: AmbientShader? = null
+    private var ambientShader: Shader? = null
 
     val controller = TouchScreenController()
 
@@ -97,9 +94,12 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         controller.currentCamera = cameraObject
         controller.currentExposedObject = triangleObject
 
-        shader = Shader(vertexShaderCode, fragmentShaderCode)
+        shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
         ambientColor.set(1f, 1f, 1f)
-        ambientShader = AmbientShader(context)
+        ambientShader = AmbientShader(
+            context.assets.open("ambientVertexShader.glsl").readBytes().toString(),
+            context.assets.open("ambientFragmentShader.glsl").readBytes().toString()
+        )
     }
 }
