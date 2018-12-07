@@ -7,7 +7,10 @@ import java.nio.Buffer
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 
-class MeshRendererComponent(private val cameraProvider: () -> CameraComponent?) : SceneObjectComponent() {
+class MeshRendererComponent(
+    private val uniformFillingVisitor: UniformFillingVisitor,
+    private val cameraProvider: () -> CameraComponent?
+) : SceneObjectComponent() {
 
     companion object {
 
@@ -21,8 +24,6 @@ class MeshRendererComponent(private val cameraProvider: () -> CameraComponent?) 
     var currentShader: Shader? = null
 
     private val mvpMatrix = Matrix4f()
-
-    private val colorFloatArray = FloatArray(4)
     private val mvpMatrixFloatArray = FloatArray(16)
 
     fun render() {
@@ -86,6 +87,7 @@ class MeshRendererComponent(private val cameraProvider: () -> CameraComponent?) 
                 vertexBuffer
             )
 
+            /*
             // get handle to fragment shader's vColor member
             GLES20.glGetUniformLocation(shader.program, "diffuseColorUniform").also { colorHandle ->
                 // Set color for drawing the triangle
@@ -94,7 +96,9 @@ class MeshRendererComponent(private val cameraProvider: () -> CameraComponent?) 
                 colorFloatArray[2] = ((material.diffuseColorUniform ushr 8) and 0xff) / 255f
                 colorFloatArray[3] = (material.diffuseColorUniform and 0xff) / 255f
                 GLES20.glUniform4fv(colorHandle, 1, colorFloatArray, 0)
-            }
+            }*/
+            uniformFillingVisitor.currentMaterial = material
+            shader.accept(uniformFillingVisitor)
 
             GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
                 viewProjectionMatrix.get(mvpMatrix)

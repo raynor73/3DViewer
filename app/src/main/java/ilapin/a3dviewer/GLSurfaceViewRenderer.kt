@@ -4,8 +4,10 @@ import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
 import ilapin.a3dengine.*
+import ilapin.a3dviewer.renderer.AmbientShader
 import ilapin.a3dviewer.renderer.MeshRendererComponent
 import ilapin.a3dviewer.renderer.Shader
+import ilapin.a3dviewer.renderer.UniformFillingVisitor
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import javax.microedition.khronos.egl.EGLConfig
@@ -14,6 +16,7 @@ import javax.microedition.khronos.opengles.GL10
 class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private val scene = Scene()
+    private val uniformFillingVisitor = UniformFillingVisitor()
     private val meshRenderers = ArrayList<MeshRendererComponent>()
     private val camera = PerspectiveCameraComponent()
 
@@ -37,7 +40,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         }
     """.trimIndent()
 
-    private var ambientShader: Shader? = null
+    private var ambientShader: AmbientShader? = null
 
     val controller = TouchScreenController()
 
@@ -62,6 +65,8 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1f)
 
+        uniformFillingVisitor.currentAmbientColor = ambientColor
+
         val rootObject = SceneObject()
 
         val cameraObject = SceneObject()
@@ -81,7 +86,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
             )
         )
         triangleObject.addComponent(TransformationComponent(Vector3f(0f, 0f, 1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
-        val meshRenderer = MeshRendererComponent { camera }
+        val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
         meshRenderers += meshRenderer
         triangleObject.addComponent(meshRenderer)
         triangleObject.addComponent(MaterialComponent(0x008000ff))
@@ -95,9 +100,6 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         shader = Shader(vertexShaderCode, fragmentShaderCode)
 
         ambientColor.set(1f, 1f, 1f)
-        ambientShader = Shader(
-            context.assets.open("ambientVertexShader.glsl").readBytes().toString(),
-            context.assets.open("ambientFragmentShader.glsl").readBytes().toString()
-        )
+        ambientShader = AmbientShader(context)
     }
 }

@@ -2,7 +2,7 @@ package ilapin.a3dviewer.renderer
 
 import android.opengl.GLES20
 
-class Shader(vertexShaderCode: String, fragmentShaderCode: String) {
+open class Shader(vertexShaderCode: String, fragmentShaderCode: String) {
 
     val program: Int
 
@@ -22,5 +22,9 @@ class Shader(vertexShaderCode: String, fragmentShaderCode: String) {
             GLES20.glShaderSource(shader, shaderCode)
             GLES20.glCompileShader(shader)
         }
+    }
+
+    fun accept(visitor: UniformFillingVisitor) {
+        visitor.visit(this)
     }
 }
