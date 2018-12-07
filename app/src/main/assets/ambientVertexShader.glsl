@@ -1,5 +1,3 @@
-#version 120
-
 attribute vec3 positionAttribute;
 uniform mat4 mvpMatrixUniform;
 

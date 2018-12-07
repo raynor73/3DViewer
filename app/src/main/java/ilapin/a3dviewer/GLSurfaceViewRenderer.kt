@@ -7,6 +7,7 @@ import ilapin.a3dengine.*
 import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
 import org.joml.Vector3f
+import java.nio.charset.Charset
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
@@ -49,6 +50,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         meshRenderers.forEach {
             it.currentShader = ambientShader
+            //it.currentShader = shader
             it.render()
         }
     }
@@ -98,8 +100,8 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         ambientColor.set(1f, 1f, 1f)
         ambientShader = AmbientShader(
-            context.assets.open("ambientVertexShader.glsl").readBytes().toString(),
-            context.assets.open("ambientFragmentShader.glsl").readBytes().toString()
+            context.assets.open("ambientVertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
+            context.assets.open("ambientFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
         )
     }
 }

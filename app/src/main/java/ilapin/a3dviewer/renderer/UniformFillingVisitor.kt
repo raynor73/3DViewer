@@ -37,7 +37,7 @@ class UniformFillingVisitor {
         val material = currentMaterial ?: return
 
         // get handle to fragment shader's vColor member
-        GLES20.glGetUniformLocation(shader.program, "diffuseColorUniform").also { colorHandle ->
+        GLES20.glGetUniformLocation(shader.program, "colorUniform").also { colorHandle ->
             // Set color for drawing the triangle
             colorFloatArray[0] = (material.diffuseColorUniform ushr 24) / 255f
             colorFloatArray[1] = ((material.diffuseColorUniform ushr 16) and 0xff) / 255f
