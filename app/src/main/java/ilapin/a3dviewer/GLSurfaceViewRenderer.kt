@@ -3,6 +3,8 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import com.owens.oobjloader.parser.BuilderInterface
+import com.owens.oobjloader.parser.Parse
 import ilapin.a3dengine.*
 import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
@@ -151,5 +153,109 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
             context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
             context.assets.open("directionalFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
         )
+
+        val objLoader = Parse(object : BuilderInterface {
+
+            override fun setObjFilename(filename: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addVertexGeometric(x: Float, y: Float, z: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addVertexTexture(u: Float, v: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addVertexNormal(x: Float, y: Float, z: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addPoints(values: IntArray?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addLine(values: IntArray?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addFace(vertexIndices: IntArray?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addObjectName(name: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun addMapLib(names: Array<out String>?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setCurrentGroupNames(names: Array<out String>?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setCurrentSmoothingGroup(groupNumber: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setCurrentUseMap(name: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setCurrentUseMaterial(name: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun newMtl(name: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setXYZ(type: Int, x: Float, y: Float, z: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setRGB(type: Int, r: Float, g: Float, b: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setIllum(illumModel: Int) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setD(halo: Boolean, factor: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setNs(exponent: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setSharpness(value: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setNi(opticalDensity: Float) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setMapDecalDispBump(type: Int, filename: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun setRefl(type: Int, filename: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun doneParsingMaterial() {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun doneParsingObj(filename: String?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+        }, context.assets.open("monkey_head.obj"), "Monkey Head")
     }
 }

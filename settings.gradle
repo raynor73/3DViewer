@@ -1,1 +1,1 @@
-include ':app', ':3dengine'
+include ':app', ':3dengine', ':oobjloader'
