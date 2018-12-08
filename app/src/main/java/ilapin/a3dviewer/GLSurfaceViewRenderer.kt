@@ -24,8 +24,14 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
     private val vertexShaderCode = """
         attribute vec3 positionAttribute;
+        attribute vec3 normalAttribute;
+
         uniform mat4 mvpMatrixUniform;
+
+        varying vec3 normal;
+
         void main() {
+            normal = normalAttribute;
             gl_Position = mvpMatrixUniform * vec4(positionAttribute, 1.0);
         }
     """.trimIndent()
@@ -33,8 +39,11 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     private val fragmentShaderCode = """
         precision mediump float;
         uniform vec4 colorUniform;
+
+        varying vec3 normal;
+
         void main() {
-            gl_FragColor = colorUniform;
+            gl_FragColor = colorUniform + vec4(normal, 1);
         }
     """.trimIndent()
 
@@ -49,8 +58,8 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
         meshRenderers.forEach {
-            it.currentShader = ambientShader
-            //it.currentShader = shader
+            //it.currentShader = ambientShader
+            it.currentShader = shader
             it.render()
         }
     }
@@ -81,6 +90,11 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
                     Vector3f(-0.5f, -0.5f, 0f),
                     Vector3f(0.5f, -0.5f, 0f)
                 ),
+                listOf(
+                    Vector3f(0f, 0f, -1f),
+                    Vector3f(0f, 0f, -1f),
+                    Vector3f(0f, 0f, -1f)
+                ),
                 listOf(0, 1, 2)
             )
         )
@@ -100,7 +114,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         ambientColor.set(1f, 1f, 1f)
         ambientShader = AmbientShader(
-            context.assets.open("ambientVertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
+            context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
             context.assets.open("ambientFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
         )
     }

@@ -14,10 +14,15 @@ class MeshRendererComponent(
 
     companion object {
 
-        private const val COORDINATES_PER_VERTEX = 3
+        private const val COORDINATES_PER_POSITION = 3
+
+        private const val COORDINATES_PER_NORMAL = 3
+
+        //private const val COMPONENTS_PER_VERTEX = COORDINATES_PER_POSITION + COORDINATES_PER_NORMAL;
     }
 
     private var cachedVertexBuffer: Buffer? = null
+    private var cachedNormalBuffer: Buffer? = null
     private var cachedIndexBuffer: Buffer? = null
     private var cachedNumberOfIndices: Int? = null
 
@@ -37,17 +42,30 @@ class MeshRendererComponent(
             val numberOfVertices = mesh.vertices.size
             val numberOfIndices = mesh.indices.size
 
-            val verticesFloatArray = FloatArray(numberOfVertices * COORDINATES_PER_VERTEX)
+            val verticesFloatArray = FloatArray(numberOfVertices * COORDINATES_PER_POSITION)
+            val normalsFloatArray = FloatArray(numberOfVertices * COORDINATES_PER_NORMAL)
             for (i in 0 until numberOfVertices) {
                 val vertex = mesh.vertices[i]
-                verticesFloatArray[i * COORDINATES_PER_VERTEX] = vertex.x
-                verticesFloatArray[i * COORDINATES_PER_VERTEX + 1] = vertex.y
-                verticesFloatArray[i * COORDINATES_PER_VERTEX + 2] = vertex.z
+                verticesFloatArray[i * COORDINATES_PER_POSITION] = vertex.x
+                verticesFloatArray[i * COORDINATES_PER_POSITION + 1] = vertex.y
+                verticesFloatArray[i * COORDINATES_PER_POSITION + 2] = vertex.z
+
+                val normal = mesh.normals[i]
+                normalsFloatArray[i * COORDINATES_PER_NORMAL] = normal.x
+                normalsFloatArray[i * COORDINATES_PER_NORMAL + 1] = normal.y
+                normalsFloatArray[i * COORDINATES_PER_NORMAL + 2] = normal.z
             }
             cachedVertexBuffer = ByteBuffer.allocateDirect(verticesFloatArray.size * BYTES_PER_FLOAT).run {
                 order(ByteOrder.nativeOrder())
                 asFloatBuffer().apply {
                     put(verticesFloatArray)
+                    position(0)
+                }
+            }
+            cachedNormalBuffer = ByteBuffer.allocateDirect(normalsFloatArray.size * BYTES_PER_FLOAT).run {
+                order(ByteOrder.nativeOrder())
+                asFloatBuffer().apply {
+                    put(normalsFloatArray)
                     position(0)
                 }
             }
@@ -67,43 +85,50 @@ class MeshRendererComponent(
             }
         }
         val vertexBuffer = cachedVertexBuffer ?: return
+        val normalBuffer = cachedNormalBuffer ?: return
         val indexBuffer = cachedIndexBuffer ?: return
         val numberOfIndices = cachedNumberOfIndices ?: return
 
         GLES20.glUseProgram(shader.program)
 
-        // get handle to vertex shader's vPosition member
-        GLES20.glGetAttribLocation(shader.program, "positionAttribute").also { positionHandle ->
-            // Enable a handle to the triangle vertices
-            GLES20.glEnableVertexAttribArray(positionHandle)
+        val positionHandle = GLES20.glGetAttribLocation(shader.program, "positionAttribute")
+        val normalHandle = GLES20.glGetAttribLocation(shader.program, "normalAttribute")
 
-            // Prepare the triangle coordinate data
-            GLES20.glVertexAttribPointer(
-                positionHandle,
-                COORDINATES_PER_VERTEX,
-                GLES20.GL_FLOAT,
-                false,
-                0,
-                vertexBuffer
-            )
+        GLES20.glEnableVertexAttribArray(positionHandle)
+        GLES20.glEnableVertexAttribArray(normalHandle)
 
-            uniformFillingVisitor.currentMaterial = material
-            shader.accept(uniformFillingVisitor)
+        GLES20.glVertexAttribPointer(
+            positionHandle,
+            COORDINATES_PER_POSITION,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            vertexBuffer
+        )
+        GLES20.glVertexAttribPointer(
+            normalHandle,
+            COORDINATES_PER_NORMAL,
+            GLES20.GL_FLOAT,
+            false,
+            0,
+            normalBuffer
+        )
 
-            GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
-                viewProjectionMatrix.get(mvpMatrix)
-                mvpMatrix.translate(transformation.getPosition())
-                mvpMatrix.scale(transformation.getScale())
-                mvpMatrix.rotate(transformation.getRotation())
-                mvpMatrix.get(mvpMatrixFloatArray)
-                GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
-            }
+        uniformFillingVisitor.currentMaterial = material
+        shader.accept(uniformFillingVisitor)
 
-            // Draw the triangle
-            GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
-
-            // Disable vertex array
-            GLES20.glDisableVertexAttribArray(positionHandle)
+        GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
+            viewProjectionMatrix.get(mvpMatrix)
+            mvpMatrix.translate(transformation.getPosition())
+            mvpMatrix.scale(transformation.getScale())
+            mvpMatrix.rotate(transformation.getRotation())
+            mvpMatrix.get(mvpMatrixFloatArray)
+            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
         }
+
+        GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
+
+        GLES20.glDisableVertexAttribArray(normalHandle)
+        GLES20.glDisableVertexAttribArray(positionHandle)
     }
 }
