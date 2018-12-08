@@ -28,8 +28,8 @@ class MeshRendererComponent(
 
     var currentShader: Shader? = null
 
-    private val mvpMatrix = Matrix4f()
-    private val mvpMatrixFloatArray = FloatArray(16)
+    private val bufferMatrix = Matrix4f()
+    private val bufferFloatArray = FloatArray(16)
 
     fun render() {
         val shader = currentShader ?: return
@@ -118,12 +118,21 @@ class MeshRendererComponent(
         shader.accept(uniformFillingVisitor)
 
         GLES20.glGetUniformLocation(shader.program, "mvpMatrixUniform").also { mvpMatrixHandle ->
-            viewProjectionMatrix.get(mvpMatrix)
-            mvpMatrix.translate(transformation.getPosition())
-            mvpMatrix.scale(transformation.getScale())
-            mvpMatrix.rotate(transformation.getRotation())
-            mvpMatrix.get(mvpMatrixFloatArray)
-            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, mvpMatrixFloatArray, 0)
+            viewProjectionMatrix.get(bufferMatrix)
+            bufferMatrix.translate(transformation.getPosition())
+            bufferMatrix.scale(transformation.getScale())
+            bufferMatrix.rotate(transformation.getRotation())
+            bufferMatrix.get(bufferFloatArray)
+            GLES20.glUniformMatrix4fv(mvpMatrixHandle, 1, false, bufferFloatArray, 0)
+        }
+
+        GLES20.glGetUniformLocation(shader.program, "modelMatrixUniform").also { handle ->
+            bufferMatrix.identity()
+            bufferMatrix.translate(transformation.getPosition())
+            bufferMatrix.scale(transformation.getScale())
+            bufferMatrix.rotate(transformation.getRotation())
+            bufferMatrix.get(bufferFloatArray)
+            GLES20.glUniformMatrix4fv(handle, 1, false, bufferFloatArray, 0)
         }
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)

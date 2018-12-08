@@ -16,6 +16,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     private val scene = Scene()
     private val uniformFillingVisitor = UniformFillingVisitor()
     private val meshRenderers = ArrayList<MeshRendererComponent>()
+    private val directionalLights = ArrayList<DirectionalLightComponent>()
     private val camera = PerspectiveCameraComponent()
 
     private val ambientColor = Vector3f()
@@ -48,6 +49,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     """.trimIndent()
 
     private var ambientShader: Shader? = null
+    private var directionalLightShader: Shader? = null
 
     val controller = TouchScreenController()
 
@@ -57,10 +59,14 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
 
-        meshRenderers.forEach {
-            //it.currentShader = ambientShader
-            it.currentShader = shader
-            it.render()
+        for (renderer in meshRenderers) {
+            for (directionalLight in directionalLights) {
+                //it.currentShader = ambientShader
+                //it.currentShader = shader
+                renderer.currentShader = directionalLightShader
+                uniformFillingVisitor.currentDirectionalLight = directionalLight
+                renderer.render()
+            }
         }
     }
 
@@ -73,9 +79,16 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1f)
 
+        ambientColor.set(1f, 1f, 1f)
         uniformFillingVisitor.currentAmbientColor = ambientColor
 
         val rootObject = SceneObject()
+
+        val sun = SceneObject()
+        val sunDirectionalLightComponent = DirectionalLightComponent(Vector3f(0f, 0f, 1f), Vector3f(-1f, 0f, 0f))
+        sun.addComponent(sunDirectionalLightComponent)
+        directionalLights += sunDirectionalLightComponent
+        rootObject.addChild(sun)
 
         val cameraObject = SceneObject()
         cameraObject.addComponent(TransformationComponent(Vector3f(), Quaternionf(), Vector3f(1f, 1f, 1f)))
@@ -102,7 +115,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
         meshRenderers += meshRenderer
         triangleObject.addComponent(meshRenderer)
-        triangleObject.addComponent(MaterialComponent(0x008000ff))
+        triangleObject.addComponent(MaterialComponent(0xffffffff.toInt()))
         rootObject.addChild(triangleObject)
 
         scene.rootObject = rootObject
@@ -112,10 +125,14 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
-        ambientColor.set(1f, 1f, 1f)
         ambientShader = AmbientShader(
             context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
             context.assets.open("ambientFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
+        )
+
+        directionalLightShader = DirectionalLightShader(
+            context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
+            context.assets.open("directionalFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
         )
     }
 }
