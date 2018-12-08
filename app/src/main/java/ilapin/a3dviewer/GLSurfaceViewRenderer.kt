@@ -57,17 +57,29 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         controller.update()
         scene.update()
 
-        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT)
+        GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
-        for (renderer in meshRenderers) {
-            for (directionalLight in directionalLights) {
-                //it.currentShader = ambientShader
-                //it.currentShader = shader
+        meshRenderers.forEach {
+            it.currentShader = ambientShader
+            it.render()
+        }
+
+        GLES20.glEnable(GLES20.GL_BLEND)
+        GLES20.glDepthMask(false)
+        GLES20.glDepthFunc(GLES20.GL_EQUAL)
+        GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE)
+
+        for (directionalLight in directionalLights) {
+            for (renderer in meshRenderers) {
                 renderer.currentShader = directionalLightShader
                 uniformFillingVisitor.currentDirectionalLight = directionalLight
                 renderer.render()
             }
         }
+
+        GLES20.glDepthMask(true)
+        GLES20.glDepthFunc(GLES20.GL_LESS)
+        GLES20.glDisable(GLES20.GL_BLEND)
     }
 
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
@@ -77,9 +89,14 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
-        GLES20.glClearColor(0.1f, 0.1f, 0.1f, 1f)
+        GLES20.glClearColor(0f, 0f, 0f, 0f)
 
-        ambientColor.set(1f, 1f, 1f)
+        GLES20.glFrontFace(GLES20.GL_CW)
+        GLES20.glCullFace(GLES20.GL_BACK)
+        GLES20.glEnable(GLES20.GL_CULL_FACE)
+        GLES20.glEnable(GLES20.GL_DEPTH_TEST)
+
+        ambientColor.set(0.1f, 0.1f, 0.1f)
         uniformFillingVisitor.currentAmbientColor = ambientColor
 
         val rootObject = SceneObject()
