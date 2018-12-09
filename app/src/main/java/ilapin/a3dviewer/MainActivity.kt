@@ -6,6 +6,7 @@ import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
+import android.util.Log
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.ScaleGestureDetector
@@ -30,8 +31,10 @@ class MainActivity : AppCompatActivity() {
             val gestureDetector = GestureDetectorCompat(this, object : GestureDetector.SimpleOnGestureListener() {
 
                 override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
-                    val normalizedDistanceX = distanceX / glView.width * 2
+                    val normalizedDistanceX = -distanceX / glView.width * 2
                     val normalizedDistanceY = distanceY / glView.height * 2
+                    Log.d("!@#", "distanceX: $distanceX; distanceY: $distanceY")
+                    Log.d("!@#", "normalizedDistanceX: $normalizedDistanceX; normalizedDistanceY: $normalizedDistanceY")
                     renderer.controller.queue.put(
                         TouchScreenController.TouchEvent.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
                     )

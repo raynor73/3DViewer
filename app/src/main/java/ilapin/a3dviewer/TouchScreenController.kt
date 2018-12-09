@@ -1,5 +1,6 @@
 package ilapin.a3dviewer
 
+import android.util.Log
 import ilapin.a3dengine.SceneObject
 import ilapin.a3dengine.TransformationComponent
 import org.joml.Quaternionf
@@ -51,8 +52,8 @@ class TouchScreenController {
             val exposedObjectTransformation = exposedObject.getComponent(TransformationComponent::class.java) ?: return
 
             rotation.set(exposedObjectTransformation.getRotation())
-            val angleY = (-normalizedDistanceX * Math.PI / 2).toFloat()
-            val angleX = (normalizedDistanceY * Math.PI / 2).toFloat()
+            val angleY = (normalizedDistanceX * Math.PI / 2).toFloat()
+            val angleX = (-normalizedDistanceY * Math.PI / 2).toFloat()
             rotation.rotateX(angleX)
             rotation.rotateY(angleY)
             exposedObjectTransformation.setRotation(rotation)

@@ -3,7 +3,9 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import de.javagl.obj.ObjReader
 import ilapin.a3dengine.*
+import ilapin.a3dviewer.meshloading.toMesh
 import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
 import org.joml.Vector3f
