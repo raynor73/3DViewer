@@ -3,9 +3,7 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import de.javagl.obj.ObjReader
 import ilapin.a3dengine.*
-import ilapin.a3dviewer.meshloading.toMesh
 import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -98,7 +96,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glEnable(GLES20.GL_CULL_FACE)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
-        ambientColor.set(0.1f, 0.1f, 0.1f)
+        ambientColor.set(0.01f, 0.01f, 0.01f)
         uniformFillingVisitor.currentAmbientColor = ambientColor
 
         val rootObject = SceneObject()
@@ -123,9 +121,9 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
                     Vector3f(0.5f, 0f, 0f)
                 ),
                 listOf(
-                    Vector3f(0f, 0f, -1f),
-                    Vector3f(0f, 0f, -1f),
-                    Vector3f(0f, 0f, -1f)
+                    Vector3f(0f, 0f, 1f),
+                    Vector3f(0f, 0f, 1f),
+                    Vector3f(0f, 0f, 1f)
                 ),
                 listOf(0, 1, 2)
             )
