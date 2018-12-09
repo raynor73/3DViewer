@@ -98,16 +98,28 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glEnable(GLES20.GL_CULL_FACE)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
-        ambientColor.set(0.01f, 0.01f, 0.01f)
+        ambientColor.set(0.1f, 0.1f, 0.1f)
         uniformFillingVisitor.currentAmbientColor = ambientColor
 
         val rootObject = SceneObject()
 
         val sun = SceneObject()
-        val sunDirectionalLightComponent = DirectionalLightComponent(Vector3f(0f, 0f, 1f), Vector3f(-1f, 0f, 0f))
+        val sunDirectionalLightComponent = DirectionalLightComponent(
+            Vector3f(1f, 1f, 1f),
+            Vector3f(1f, -1f, -1f).normalize()
+        )
         sun.addComponent(sunDirectionalLightComponent)
         directionalLights += sunDirectionalLightComponent
         rootObject.addChild(sun)
+
+        val sky = SceneObject()
+        val skyDirectionalLightComponent = DirectionalLightComponent(
+            Vector3f(0.5f, 0.5f, 0.5f),
+            Vector3f(-1f, 0f, 0f)
+        )
+        sky.addComponent(skyDirectionalLightComponent)
+        directionalLights += skyDirectionalLightComponent
+        rootObject.addChild(sky)
 
         val cameraObject = SceneObject()
         cameraObject.addComponent(TransformationComponent(Vector3f(), Quaternionf(), Vector3f(1f, 1f, 1f)))
