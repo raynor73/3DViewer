@@ -8,7 +8,7 @@ class PerspectiveCameraComponent: CameraComponent() {
 
     private val projectionMatrix = Matrix4f()
     private val viewProjectionMatrix = Matrix4f()
-    private val lookAtDirection = Vector3f(0f, 0f, 1f)
+    private val lookAtDirection = Vector3f(0f, 0f, -1f)
     private val up = Vector3f(0f, 1f, 0f)
 
     var config: Config? = null

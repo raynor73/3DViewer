@@ -131,7 +131,7 @@ class MeshRendererComponent(
         GLES20.glGetUniformLocation(shader.program, "modelMatrixUniform").also { handle ->
             bufferMatrix.identity()
             bufferMatrix.translate(transformation.getPosition())
-            bufferMatrix.scale(transformation.getScale())
+            //bufferMatrix.scale(transformation.getScale())
             bufferMatrix.rotate(transformation.getRotation())
             bufferMatrix.get(bufferFloatArray)
             GLES20.glUniformMatrix4fv(handle, 1, false, bufferFloatArray, 0)

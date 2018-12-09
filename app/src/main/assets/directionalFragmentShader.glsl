@@ -13,5 +13,5 @@ varying vec3 normalVarying;
 void main() {
     gl_FragColor =
         diffuseColorUniform *
-        vec4(directionalLightUniform.color, 1.0) * dot(normalVarying, directionalLightUniform.direction);
+        vec4(directionalLightUniform.color, 1.0) * dot(normalVarying, -directionalLightUniform.direction);
 }

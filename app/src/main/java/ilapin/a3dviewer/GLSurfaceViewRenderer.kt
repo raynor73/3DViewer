@@ -93,7 +93,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
         GLES20.glClearColor(0f, 0f, 0f, 0f)
 
-        GLES20.glFrontFace(GLES20.GL_CW)
+        GLES20.glFrontFace(GLES20.GL_CCW)
         GLES20.glCullFace(GLES20.GL_BACK)
         GLES20.glEnable(GLES20.GL_CULL_FACE)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
@@ -114,13 +114,13 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         cameraObject.addComponent(camera)
         rootObject.addChild(cameraObject)
 
-        /*val triangleObject = SceneObject()
-        triangleObject.addComponent(
+        val exposedObject = SceneObject()
+        /*exposedObject.addComponent(
             MeshComponent(
                 listOf(
-                    Vector3f(0f, 0.5f, 0f),
+                    Vector3f(-0.5f, 0.5f, 0f),
                     Vector3f(-0.5f, -0.5f, 0f),
-                    Vector3f(0.5f, -0.5f, 0f)
+                    Vector3f(0.5f, 0f, 0f)
                 ),
                 listOf(
                     Vector3f(0f, 0f, -1f),
@@ -130,15 +130,14 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
                 listOf(0, 1, 2)
             )
         )
-        triangleObject.addComponent(TransformationComponent(Vector3f(0f, 0f, 1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
+        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
         val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
         meshRenderers += meshRenderer
-        triangleObject.addComponent(meshRenderer)
-        triangleObject.addComponent(MaterialComponent(0xffffffff.toInt()))
-        rootObject.addChild(triangleObject)*/
-        val exposedObject = SceneObject()
+        exposedObject.addComponent(meshRenderer)
+        exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
+        rootObject.addChild(exposedObject)*/
         exposedObject.addComponent(ObjReader.read(context.assets.open("monkey_head.obj")).toMesh())
-        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, 1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
+        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
         val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
         meshRenderers += meshRenderer
         exposedObject.addComponent(meshRenderer)
