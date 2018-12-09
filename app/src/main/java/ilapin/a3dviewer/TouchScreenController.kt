@@ -1,6 +1,5 @@
 package ilapin.a3dviewer
 
-import android.util.Log
 import ilapin.a3dengine.SceneObject
 import ilapin.a3dengine.TransformationComponent
 import org.joml.Quaternionf
@@ -21,7 +20,7 @@ class TouchScreenController {
     private val rotation = Quaternionf()
 
     private var scaleFactor = 1f
-    private var hasRotationMode = false
+    private var hasScrollingMode = false
 
     fun update() {
         while (queue.size != 0) {
@@ -29,8 +28,8 @@ class TouchScreenController {
             when (event) {
                 is TouchEvent.ScrollEvent -> onScroll(event.normalizedDistanceX, event.normalizedDistanceY)
                 is TouchEvent.ScaleEvent -> onScale(event.scaleFactor)
-                is TouchEvent.LongPressEvent -> hasRotationMode = true
-                is TouchEvent.TerminalEvent -> hasRotationMode = false
+                is TouchEvent.LongPressEvent -> hasScrollingMode = true
+                is TouchEvent.TerminalEvent -> hasScrollingMode = false
             }
         }
     }
@@ -47,15 +46,16 @@ class TouchScreenController {
     }
 
     private fun onScroll(normalizedDistanceX: Float, normalizedDistanceY: Float) {
-        if (hasRotationMode) {
+        if (!hasScrollingMode) {
             val exposedObject = currentExposedObject ?: return
             val exposedObjectTransformation = exposedObject.getComponent(TransformationComponent::class.java) ?: return
 
-            rotation.set(exposedObjectTransformation.getRotation())
+            rotation.identity()
             val angleY = (normalizedDistanceX * Math.PI / 2).toFloat()
             val angleX = (-normalizedDistanceY * Math.PI / 2).toFloat()
             rotation.rotateX(angleX)
             rotation.rotateY(angleY)
+            rotation.mul(exposedObjectTransformation.getRotation())
             exposedObjectTransformation.setRotation(rotation)
         } else {
             val camera = currentCamera ?: return
