@@ -3,10 +3,9 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import android.util.Log
-import com.owens.oobjloader.parser.BuilderInterface
-import com.owens.oobjloader.parser.Parse
+import de.javagl.obj.ObjReader
 import ilapin.a3dengine.*
+import ilapin.a3dviewer.meshloading.toMesh
 import ilapin.a3dviewer.renderer.*
 import org.joml.Quaternionf
 import org.joml.Vector3f
@@ -115,7 +114,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         cameraObject.addComponent(camera)
         rootObject.addChild(cameraObject)
 
-        val triangleObject = SceneObject()
+        /*val triangleObject = SceneObject()
         triangleObject.addComponent(
             MeshComponent(
                 listOf(
@@ -136,12 +135,20 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         meshRenderers += meshRenderer
         triangleObject.addComponent(meshRenderer)
         triangleObject.addComponent(MaterialComponent(0xffffffff.toInt()))
-        rootObject.addChild(triangleObject)
-
+        rootObject.addChild(triangleObject)*/
+        val exposedObject = SceneObject()
+        exposedObject.addComponent(ObjReader.read(context.assets.open("monkey_head.obj")).toMesh())
+        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, 1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
+        val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
+        meshRenderers += meshRenderer
+        exposedObject.addComponent(meshRenderer)
+        exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
+        rootObject.addChild(exposedObject)
+        
         scene.rootObject = rootObject
 
         controller.currentCamera = cameraObject
-        controller.currentExposedObject = triangleObject
+        controller.currentExposedObject = exposedObject
 
         shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
@@ -154,109 +161,5 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
             context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),
             context.assets.open("directionalFragmentShader.glsl").readBytes().toString(Charset.defaultCharset())
         )
-
-        val objLoader = Parse(object : BuilderInterface {
-
-            override fun setObjFilename(filename: String?) {
-                Log.d("!@#", "setObjFilename")
-            }
-
-            override fun addVertexGeometric(x: Float, y: Float, z: Float) {
-                Log.d("!@#", "addVertexGeometric")
-            }
-
-            override fun addVertexTexture(u: Float, v: Float) {
-                Log.d("!@#", "addVertexTexture")
-            }
-
-            override fun addVertexNormal(x: Float, y: Float, z: Float) {
-                Log.d("!@#", "addVertexNormal")
-            }
-
-            override fun addPoints(values: IntArray?) {
-                Log.d("!@#", "addPoints")
-            }
-
-            override fun addLine(values: IntArray?) {
-                Log.d("!@#", "addLine")
-            }
-
-            override fun addFace(vertexIndices: IntArray?) {
-                Log.d("!@#", "addFace")
-            }
-
-            override fun addObjectName(name: String?) {
-                Log.d("!@#", "addObjectName")
-            }
-
-            override fun addMapLib(names: Array<out String>?) {
-                Log.d("!@#", "addMapLib")
-            }
-
-            override fun setCurrentGroupNames(names: Array<out String>?) {
-                Log.d("!@#", "setCurrentGroupNames")
-            }
-
-            override fun setCurrentSmoothingGroup(groupNumber: Int) {
-                Log.d("!@#", "setCurrentSmoothingGroup")
-            }
-
-            override fun setCurrentUseMap(name: String?) {
-                Log.d("!@#", "setCurrentUseMap")
-            }
-
-            override fun setCurrentUseMaterial(name: String?) {
-                Log.d("!@#", "setCurrentUseMaterial")
-            }
-
-            override fun newMtl(name: String?) {
-                Log.d("!@#", "newMtl")
-            }
-
-            override fun setXYZ(type: Int, x: Float, y: Float, z: Float) {
-                Log.d("!@#", "setXYZ")
-            }
-
-            override fun setRGB(type: Int, r: Float, g: Float, b: Float) {
-                Log.d("!@#", "setRGB")
-            }
-
-            override fun setIllum(illumModel: Int) {
-                Log.d("!@#", "setIllum")
-            }
-
-            override fun setD(halo: Boolean, factor: Float) {
-                Log.d("!@#", "setD")
-            }
-
-            override fun setNs(exponent: Float) {
-                Log.d("!@#", "setNs")
-            }
-
-            override fun setSharpness(value: Float) {
-                Log.d("!@#", "setSharpness")
-            }
-
-            override fun setNi(opticalDensity: Float) {
-                Log.d("!@#", "setNi")
-            }
-
-            override fun setMapDecalDispBump(type: Int, filename: String?) {
-                Log.d("!@#", "setMapDecalDispBump")
-            }
-
-            override fun setRefl(type: Int, filename: String?) {
-                Log.d("!@#", "setRefl")
-            }
-
-            override fun doneParsingMaterial() {
-                Log.d("!@#", "doneParsingMaterial")
-            }
-
-            override fun doneParsingObj(filename: String?) {
-                Log.d("!@#", "doneParsingObj")
-            }
-
-        }, context.assets.open("monkey_head.obj"), "Monkey Head")
     }
 }

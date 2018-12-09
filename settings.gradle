@@ -1,1 +1,1 @@
-include ':app', ':3dengine', ':oobjloader'
+include ':app', ':3dengine', ':javagl-obj-loader'

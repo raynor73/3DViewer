@@ -73,7 +73,7 @@ class MeshRendererComponent(
             cachedNumberOfIndices = numberOfIndices
 
             val indicesShortArray = ShortArray(numberOfIndices)
-            for (i in 0 until numberOfVertices) {
+            for (i in 0 until numberOfIndices) {
                 indicesShortArray[i] = mesh.indices[i].toShort()
             }
             cachedIndexBuffer = ByteBuffer.allocateDirect(numberOfIndices * BYTES_PER_SHORT).run {
@@ -95,7 +95,7 @@ class MeshRendererComponent(
         val normalHandle = GLES20.glGetAttribLocation(shader.program, "normalAttribute")
 
         GLES20.glEnableVertexAttribArray(positionHandle)
-        GLES20.glEnableVertexAttribArray(normalHandle)
+        normalHandle.takeIf { it >= 0 }?.let { GLES20.glEnableVertexAttribArray(normalHandle) }
 
         GLES20.glVertexAttribPointer(
             positionHandle,
@@ -105,14 +105,16 @@ class MeshRendererComponent(
             0,
             vertexBuffer
         )
-        GLES20.glVertexAttribPointer(
-            normalHandle,
-            COORDINATES_PER_NORMAL,
-            GLES20.GL_FLOAT,
-            false,
-            0,
-            normalBuffer
-        )
+        normalHandle.takeIf { it >= 0 }?.let {
+            GLES20.glVertexAttribPointer(
+                normalHandle,
+                COORDINATES_PER_NORMAL,
+                GLES20.GL_FLOAT,
+                false,
+                0,
+                normalBuffer
+            )
+        }
 
         uniformFillingVisitor.currentMaterial = material
         shader.accept(uniformFillingVisitor)
@@ -137,7 +139,7 @@ class MeshRendererComponent(
 
         GLES20.glDrawElements(GLES20.GL_TRIANGLES, numberOfIndices, GLES20.GL_UNSIGNED_SHORT, indexBuffer)
 
-        GLES20.glDisableVertexAttribArray(normalHandle)
+        normalHandle.takeIf { it >= 0 }?.let { GLES20.glDisableVertexAttribArray(normalHandle) }
         GLES20.glDisableVertexAttribArray(positionHandle)
     }
 }
