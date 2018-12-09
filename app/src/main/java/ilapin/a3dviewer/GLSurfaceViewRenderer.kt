@@ -3,6 +3,7 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
+import android.util.Log
 import com.owens.oobjloader.parser.BuilderInterface
 import com.owens.oobjloader.parser.Parse
 import ilapin.a3dengine.*
@@ -157,103 +158,103 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         val objLoader = Parse(object : BuilderInterface {
 
             override fun setObjFilename(filename: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setObjFilename")
             }
 
             override fun addVertexGeometric(x: Float, y: Float, z: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addVertexGeometric")
             }
 
             override fun addVertexTexture(u: Float, v: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addVertexTexture")
             }
 
             override fun addVertexNormal(x: Float, y: Float, z: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addVertexNormal")
             }
 
             override fun addPoints(values: IntArray?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addPoints")
             }
 
             override fun addLine(values: IntArray?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addLine")
             }
 
             override fun addFace(vertexIndices: IntArray?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addFace")
             }
 
             override fun addObjectName(name: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addObjectName")
             }
 
             override fun addMapLib(names: Array<out String>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "addMapLib")
             }
 
             override fun setCurrentGroupNames(names: Array<out String>?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setCurrentGroupNames")
             }
 
             override fun setCurrentSmoothingGroup(groupNumber: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setCurrentSmoothingGroup")
             }
 
             override fun setCurrentUseMap(name: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setCurrentUseMap")
             }
 
             override fun setCurrentUseMaterial(name: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setCurrentUseMaterial")
             }
 
             override fun newMtl(name: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "newMtl")
             }
 
             override fun setXYZ(type: Int, x: Float, y: Float, z: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setXYZ")
             }
 
             override fun setRGB(type: Int, r: Float, g: Float, b: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setRGB")
             }
 
             override fun setIllum(illumModel: Int) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setIllum")
             }
 
             override fun setD(halo: Boolean, factor: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setD")
             }
 
             override fun setNs(exponent: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setNs")
             }
 
             override fun setSharpness(value: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setSharpness")
             }
 
             override fun setNi(opticalDensity: Float) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setNi")
             }
 
             override fun setMapDecalDispBump(type: Int, filename: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setMapDecalDispBump")
             }
 
             override fun setRefl(type: Int, filename: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "setRefl")
             }
 
             override fun doneParsingMaterial() {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "doneParsingMaterial")
             }
 
             override fun doneParsingObj(filename: String?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+                Log.d("!@#", "doneParsingObj")
             }
 
         }, context.assets.open("monkey_head.obj"), "Monkey Head")

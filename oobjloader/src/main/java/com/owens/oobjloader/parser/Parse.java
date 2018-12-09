@@ -629,6 +629,11 @@ public class Parse {
     // material file processing
     // ----------------------------------------------------------------------
     private void parseMtlFile(String mtlFilename) throws FileNotFoundException, IOException {
+        if (objFile == null) {
+            log.log(INFO, "No OBJ file, looks like we parsing stream. Material parsing will not be executed.");
+            return;
+        }
+
         int lineCount = 0;
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
