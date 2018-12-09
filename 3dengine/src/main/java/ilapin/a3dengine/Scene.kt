@@ -1,6 +1,6 @@
 package ilapin.a3dengine
 
-class Scene {
+open class Scene {
 
     var rootObject: SceneObject? = null
 
