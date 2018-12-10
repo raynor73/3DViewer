@@ -1,19 +1,23 @@
 package ilapin.a3dviewer
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Intent
 import android.content.res.Configuration
 import android.opengl.GLSurfaceView
 import android.os.Bundle
 import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.view.ScaleGestureDetector
-import android.view.View
+import android.view.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+
+        private const val PICK_FILE_REQUEST_CODE = 1
+    }
 
     private lateinit var glView: GLSurfaceView
 
@@ -33,8 +37,6 @@ class MainActivity : AppCompatActivity() {
                 override fun onScroll(e1: MotionEvent, e2: MotionEvent, distanceX: Float, distanceY: Float): Boolean {
                     val normalizedDistanceX = -distanceX / glView.width * 2
                     val normalizedDistanceY = distanceY / glView.height * 2
-                    Log.d("!@#", "distanceX: $distanceX; distanceY: $distanceY")
-                    Log.d("!@#", "normalizedDistanceX: $normalizedDistanceX; normalizedDistanceY: $normalizedDistanceY")
                     renderer.controller.queue.put(
                         TouchScreenController.TouchEvent.ScrollEvent(normalizedDistanceX, normalizedDistanceY)
                     )
@@ -86,6 +88,29 @@ class MainActivity : AppCompatActivity() {
             hideControls()
         } else {
             showControls()
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.pick_file) {
+            val intent = Intent()
+            intent.type = "*/*"
+            intent.action = Intent.ACTION_GET_CONTENT
+            startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+            Log.d("!@#", "data: $data")
         }
     }
 
