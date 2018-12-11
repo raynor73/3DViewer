@@ -15,6 +15,7 @@ import ilapin.a3dviewer.domain.meshloading.MeshLoader
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
+import java.io.BufferedInputStream
 
 class MainActivity : AppCompatActivity() {
 
@@ -95,7 +96,16 @@ class MainActivity : AppCompatActivity() {
                         when (state) {
                             is MeshLoader.State.NoMesh -> {
                                 progressBar.visibility = View.GONE
-                                //Toast.state.error
+                                state.error?.let {
+                                    Toast.makeText(this, "Error loading mesh: ${it.message}", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            is MeshLoader.State.Loading -> progressBar.visibility = View.VISIBLE
+
+                            is MeshLoader.State.MeshReady -> {
+                                progressBar.visibility = View.GONE
+                                Toast.makeText(this, "Mesh: number of vertices: ${state.mesh.vertices.size}", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -134,7 +144,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Log.d("!@#", "data uri: ${data?.data}")
+            data?.data?.let {
+                meshLoader.loadMesh(BufferedInputStream(contentResolver.openInputStream(it)))
+            }
         }
     }
 
