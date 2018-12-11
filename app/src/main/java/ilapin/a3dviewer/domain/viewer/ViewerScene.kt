@@ -1,4 +1,4 @@
-package ilapin.a3dviewer.domain
+package ilapin.a3dviewer.domain.viewer
 
 import ilapin.a3dengine.*
 import ilapin.a3dviewer.renderer.MeshRendererComponent

@@ -1,4 +1,4 @@
-package ilapin.a3dviewer.meshloading
+package ilapin.a3dviewer.domain.meshloading
 
 import de.javagl.obj.Obj
 import ilapin.a3dengine.MeshComponent

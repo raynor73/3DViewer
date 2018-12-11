@@ -10,6 +10,10 @@ import android.support.v4.view.GestureDetectorCompat
 import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
+import android.widget.Toast
+import ilapin.a3dviewer.domain.meshloading.MeshLoader
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -18,6 +22,10 @@ class MainActivity : AppCompatActivity() {
 
         private const val PICK_FILE_REQUEST_CODE = 1
     }
+
+    private val meshLoader = MeshLoader()
+
+    private val subscriptions = CompositeDisposable()
 
     private lateinit var glView: GLSurfaceView
 
@@ -78,6 +86,20 @@ class MainActivity : AppCompatActivity() {
             glView.setRenderer(renderer)
             glView.renderMode = GLSurfaceView.RENDERMODE_CONTINUOUSLY
             container.addView(glView, 0)
+
+            subscriptions.add(
+                meshLoader
+                    .state
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe { state ->
+                        when (state) {
+                            is MeshLoader.State.NoMesh -> {
+                                progressBar.visibility = View.GONE
+                                //Toast.state.error
+                            }
+                        }
+                    }
+            )
         }
     }
 
@@ -101,6 +123,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent()
             intent.type = "*/*"
             intent.action = Intent.ACTION_GET_CONTENT
+            intent.addCategory(Intent.CATEGORY_OPENABLE)
+            intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true)
             startActivityForResult(intent, PICK_FILE_REQUEST_CODE)
             true
         } else {
@@ -110,8 +134,14 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == PICK_FILE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            Log.d("!@#", "data: $data")
+            Log.d("!@#", "data uri: ${data?.data}")
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        subscriptions.clear()
+        meshLoader.onCleared()
     }
 
     private fun toggleFullscreen() {
