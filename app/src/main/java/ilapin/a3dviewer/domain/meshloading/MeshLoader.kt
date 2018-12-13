@@ -1,6 +1,8 @@
 package ilapin.a3dviewer.domain.meshloading
 
+import android.util.Log
 import de.javagl.obj.ObjReader
+import de.javagl.obj.ObjUtils
 import ilapin.a3dengine.MeshComponent
 import io.reactivex.Observable
 import io.reactivex.disposables.Disposable
@@ -22,13 +24,15 @@ class MeshLoader {
         }
 
         loadingSubscription = Observable
-            .fromCallable { ObjReader.read(inputStream).toMesh() }
+            .fromCallable { ObjUtils.triangulate(ObjReader.read(inputStream)).toMesh() }
             .map<State> { mesh -> State.MeshReady(mesh) }
             .startWith(State.Loading)
             .onErrorReturn { t -> State.NoMesh(t) }
             .subscribeOn(Schedulers.io())
             .subscribe { state ->
-                inputStream.close()
+                if (state != State.Loading) {
+                    inputStream.close()
+                }
                 stateSubject.onNext(state)
             }
     }

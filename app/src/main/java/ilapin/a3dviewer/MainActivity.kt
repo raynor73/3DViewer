@@ -11,7 +11,9 @@ import android.support.v7.app.AppCompatActivity
 import android.util.Log
 import android.view.*
 import android.widget.Toast
+import ilapin.a3dviewer.App.Companion.LOG_TAG
 import ilapin.a3dviewer.domain.meshloading.MeshLoader
+import ilapin.common.android.log.L
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.activity_main.*
@@ -98,6 +100,7 @@ class MainActivity : AppCompatActivity() {
                                 progressBar.visibility = View.GONE
                                 state.error?.let {
                                     Toast.makeText(this, "Error loading mesh: ${it.message}", Toast.LENGTH_SHORT).show()
+                                    L.e(LOG_TAG, state.error)
                                 }
                             }
 
