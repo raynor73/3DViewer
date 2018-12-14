@@ -1,6 +1,5 @@
 package ilapin.a3dviewer.domain.meshloading
 
-import android.util.Log
 import de.javagl.obj.ObjReader
 import de.javagl.obj.ObjUtils
 import ilapin.a3dengine.MeshComponent
