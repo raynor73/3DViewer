@@ -108,6 +108,7 @@ class MainActivity : AppCompatActivity() {
 
                             is MeshLoader.State.MeshReady -> {
                                 progressBar.visibility = View.GONE
+                                renderer.exposedMeshQueue.put(state.mesh)
                                 Toast.makeText(this, "Mesh: number of vertices: ${state.mesh.vertices.size}", Toast.LENGTH_SHORT).show()
                             }
                         }

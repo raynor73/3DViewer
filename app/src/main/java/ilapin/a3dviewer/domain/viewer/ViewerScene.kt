@@ -6,23 +6,23 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.joml.Vector3fc
 
-class ViewerScene : Scene() {
+class ViewerScene {
 
-    private val _meshRenderers = ArrayList<MeshRendererComponent>()
     private val _directionalLights = ArrayList<DirectionalLightComponent>()
     private val _ambientColor = Vector3f()
 
-    val camera = PerspectiveCameraComponent()
-    var exposedObject: SceneObject? = null
+    private var currentExposedObject: SceneObject? = null
 
-    val meshRendsrers: List<MeshRendererComponent> = _meshRenderers
+    val rootObject: SceneObject
+    val camera: SceneObject
+
     val directionalLights: List<DirectionalLightComponent> = _directionalLights
     val ambientColor: Vector3fc = _ambientColor
 
     init {
         _ambientColor.set(0.1f, 0.1f, 0.1f)
 
-        val rootObject = SceneObject()
+        rootObject = SceneObject()
 
         val sun = SceneObject()
         val sunDirectionalLightComponent = DirectionalLightComponent(
@@ -42,11 +42,23 @@ class ViewerScene : Scene() {
         _directionalLights += skyDirectionalLightComponent
         rootObject.addChild(sky)
 
-        val cameraObject = SceneObject()
-        cameraObject.addComponent(TransformationComponent(Vector3f(), Quaternionf(), Vector3f(1f, 1f, 1f)))
-        cameraObject.addComponent(camera)
-        rootObject.addChild(cameraObject)
-
-        this.rootObject = rootObject
+        camera = SceneObject()
+        camera.addComponent(TransformationComponent(Vector3f(), Quaternionf(), Vector3f(1f, 1f, 1f)))
+        camera.addComponent(PerspectiveCameraComponent())
+        rootObject.addChild(camera)
     }
+
+    fun exposeMesh(mesh: MeshComponent, rendererComponent: SceneObjectComponent) {
+        currentExposedObject?.let { rootObject.removeChild(it) }
+
+        val exposedObject = SceneObject()
+        exposedObject.addComponent(rendererComponent)
+        exposedObject.addComponent(mesh)
+        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
+        exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
+        rootObject.addChild(exposedObject)
+        currentExposedObject = exposedObject
+    }
+
+    fun getExposedObject() = currentExposedObject
 }

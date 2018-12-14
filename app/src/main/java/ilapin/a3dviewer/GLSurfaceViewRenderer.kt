@@ -3,21 +3,21 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import de.javagl.obj.ObjReader
-import ilapin.a3dengine.*
+import ilapin.a3dengine.DirectionalLightComponent
+import ilapin.a3dengine.MeshComponent
+import ilapin.a3dengine.PerspectiveCameraComponent
 import ilapin.a3dviewer.domain.viewer.ViewerScene
-import ilapin.a3dviewer.domain.meshloading.toMesh
 import ilapin.a3dviewer.renderer.*
-import org.joml.Quaternionf
 import org.joml.Vector3f
 import java.nio.charset.Charset
+import java.util.concurrent.LinkedBlockingQueue
 import javax.microedition.khronos.egl.EGLConfig
 import javax.microedition.khronos.opengles.GL10
 
 class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private val viewerScene = ViewerScene()
-    private val scene = Scene()
+    //private val scene = Scene()
     private val uniformFillingVisitor = UniformFillingVisitor()
     private val meshRenderers = ArrayList<MeshRendererComponent>()
     private val directionalLights = ArrayList<DirectionalLightComponent>()
@@ -56,10 +56,19 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     private var directionalLightShader: Shader? = null
 
     val controller = TouchScreenController()
+    val exposedMeshQueue = LinkedBlockingQueue<MeshComponent>()
 
     override fun onDrawFrame(gl: GL10) {
+        if (exposedMeshQueue.size != 0) {
+            meshRenderers.clear()
+            val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
+            meshRenderers += meshRenderer
+            viewerScene.exposeMesh(exposedMeshQueue.take(), meshRenderer)
+            controller.currentExposedObject = viewerScene.getExposedObject()
+        }
+
         controller.update()
-        scene.update()
+        //scene.update()
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
@@ -103,7 +112,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         ambientColor.set(0.1f, 0.1f, 0.1f)
         uniformFillingVisitor.currentAmbientColor = ambientColor
 
-        val rootObject = SceneObject()
+        /*val rootObject = SceneObject()
 
         val sun = SceneObject()
         val sunDirectionalLightComponent = DirectionalLightComponent(
@@ -128,7 +137,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         cameraObject.addComponent(camera)
         rootObject.addChild(cameraObject)
 
-        val exposedObject = SceneObject()
+        val exposedObject = SceneObject()*/
         /*exposedObject.addComponent(
             MeshComponent(
                 listOf(
@@ -150,7 +159,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         exposedObject.addComponent(meshRenderer)
         exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
         rootObject.addChild(exposedObject)*/
-        exposedObject.addComponent(ObjReader.read(context.assets.open("monkey_head.obj")).toMesh())
+        /*exposedObject.addComponent(ObjReader.read(context.assets.open("monkey_head.obj")).toMesh())
         exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
         val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
         meshRenderers += meshRenderer
@@ -161,7 +170,9 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         scene.rootObject = rootObject
 
         controller.currentCamera = cameraObject
-        controller.currentExposedObject = exposedObject
+        controller.currentExposedObject = exposedObject*/
+
+        controller.currentCamera = viewerScene.camera
 
         shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
