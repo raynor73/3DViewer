@@ -1,10 +1,8 @@
 package ilapin.a3dviewer.domain.viewer
 
 import ilapin.a3dengine.*
-import ilapin.a3dviewer.renderer.MeshRendererComponent
 import org.joml.Quaternionf
 import org.joml.Vector3f
-import org.joml.Vector3fc
 
 class ViewerScene {
 
@@ -13,11 +11,11 @@ class ViewerScene {
 
     private var currentExposedObject: SceneObject? = null
 
-    val rootObject: SceneObject
+    private val rootObject: SceneObject
     val camera: SceneObject
 
     val directionalLights: List<DirectionalLightComponent> = _directionalLights
-    val ambientColor: Vector3fc = _ambientColor
+    //val ambientColor: Vector3fc = _ambientColor
 
     init {
         _ambientColor.set(0.1f, 0.1f, 0.1f)
