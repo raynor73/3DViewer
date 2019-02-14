@@ -15,40 +15,8 @@ import javax.microedition.khronos.opengles.GL10
 class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Renderer {
 
     private val viewerScene = ViewerScene()
-    //private val scene = Scene()
     private val uniformFillingVisitor = UniformFillingVisitor()
     private val meshRenderers = ArrayList<MeshRendererComponent>()
-    //private val directionalLights = ArrayList<DirectionalLightComponent>()
-    //private val camera = PerspectiveCameraComponent()
-
-    /*private val ambientColor = Vector3f()
-
-    private var shader: Shader? = null
-
-    private val vertexShaderCode = """
-        attribute vec3 positionAttribute;
-        attribute vec3 normalAttribute;
-
-        uniform mat4 mvpMatrixUniform;
-
-        varying vec3 normal;
-
-        void main() {
-            normal = normalAttribute;
-            gl_Position = mvpMatrixUniform * vec4(positionAttribute, 1.0);
-        }
-    """.trimIndent()
-
-    private val fragmentShaderCode = """
-        precision mediump float;
-        uniform vec4 colorUniform;
-
-        varying vec3 normal;
-
-        void main() {
-            gl_FragColor = colorUniform + vec4(normal, 1);
-        }
-    """.trimIndent()*/
 
     private var ambientShader: Shader? = null
     private var directionalLightShader: Shader? = null
@@ -68,7 +36,6 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         }
 
         controller.update()
-        //scene.update()
 
         GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT or GLES20.GL_DEPTH_BUFFER_BIT)
 
@@ -112,72 +79,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glEnable(GLES20.GL_CULL_FACE)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
-        /*ambientColor.set(0.1f, 0.1f, 0.1f)
-        uniformFillingVisitor.currentAmbientColor = ambientColor*/
-
-        /*val rootObject = SceneObject()
-
-        val sun = SceneObject()
-        val sunDirectionalLightComponent = DirectionalLightComponent(
-            Vector3f(1f, 1f, 1f),
-            Vector3f(1f, -1f, -1f).normalize()
-        )
-        sun.addComponent(sunDirectionalLightComponent)
-        directionalLights += sunDirectionalLightComponent
-        rootObject.addChild(sun)
-
-        val sky = SceneObject()
-        val skyDirectionalLightComponent = DirectionalLightComponent(
-            Vector3f(0.5f, 0.5f, 0.5f),
-            Vector3f(-1f, 0f, 0f)
-        )
-        sky.addComponent(skyDirectionalLightComponent)
-        directionalLights += skyDirectionalLightComponent
-        rootObject.addChild(sky)
-
-        val cameraObject = SceneObject()
-        cameraObject.addComponent(TransformationComponent(Vector3f(), Quaternionf(), Vector3f(1f, 1f, 1f)))
-        cameraObject.addComponent(camera)
-        rootObject.addChild(cameraObject)
-
-        val exposedObject = SceneObject()*/
-        /*exposedObject.addComponent(
-            MeshComponent(
-                listOf(
-                    Vector3f(-0.5f, 0.5f, 0f),
-                    Vector3f(-0.5f, -0.5f, 0f),
-                    Vector3f(0.5f, 0f, 0f)
-                ),
-                listOf(
-                    Vector3f(0f, 0f, 1f),
-                    Vector3f(0f, 0f, 1f),
-                    Vector3f(0f, 0f, 1f)
-                ),
-                listOf(0, 1, 2)
-            )
-        )
-        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
-        val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
-        meshRenderers += meshRenderer
-        exposedObject.addComponent(meshRenderer)
-        exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
-        rootObject.addChild(exposedObject)*/
-        /*exposedObject.addComponent(ObjReader.read(context.assets.open("monkey_head.obj")).toMesh())
-        exposedObject.addComponent(TransformationComponent(Vector3f(0f, 0f, -1f), Quaternionf(), Vector3f(1f, 1f, 1f)))
-        val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
-        meshRenderers += meshRenderer
-        exposedObject.addComponent(meshRenderer)
-        exposedObject.addComponent(MaterialComponent(0xffffffff.toInt()))
-        rootObject.addChild(exposedObject)
-        
-        scene.rootObject = rootObject
-
-        controller.currentCamera = cameraObject
-        controller.currentExposedObject = exposedObject*/
-
         controller.currentCamera = viewerScene.camera
-
-        //shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
         ambientShader = AmbientShader(
             context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),

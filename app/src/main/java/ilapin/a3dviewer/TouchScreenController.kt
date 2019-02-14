@@ -11,9 +11,14 @@ class TouchScreenController {
     val queue = LinkedBlockingQueue<TouchEvent>()
 
     var currentCamera: SceneObject? = null
-    var currentExposedObject: SceneObject? = null
+    private var _currentExposedObject: SceneObject? = null
 
-    //private val invertedViewProjectionMatrix = Matrix4f()
+    var currentExposedObject: SceneObject?
+    get() = _currentExposedObject
+    set(value) {
+        _currentExposedObject = value
+        scaleFactor = 1f
+    }
 
     private val position = Vector3f()
     private val scale = Vector3f()
@@ -60,7 +65,6 @@ class TouchScreenController {
         } else {
             val camera = currentCamera ?: return
             val cameraTransformation = camera.getComponent(TransformationComponent::class.java) ?: return
-            //val viewProjectionMatrix = camera.getComponent(PerspectiveCameraComponent::class.java)?.getViewProjectionMatrix() ?: return
 
             position.set(cameraTransformation.getPosition())
             position.x -= normalizedDistanceX
