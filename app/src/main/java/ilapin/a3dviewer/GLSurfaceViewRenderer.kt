@@ -3,12 +3,10 @@ package ilapin.a3dviewer
 import android.content.Context
 import android.opengl.GLES20
 import android.opengl.GLSurfaceView
-import ilapin.a3dengine.DirectionalLightComponent
 import ilapin.a3dengine.MeshComponent
 import ilapin.a3dengine.PerspectiveCameraComponent
 import ilapin.a3dviewer.domain.viewer.ViewerScene
 import ilapin.a3dviewer.renderer.*
-import org.joml.Vector3f
 import java.nio.charset.Charset
 import java.util.concurrent.LinkedBlockingQueue
 import javax.microedition.khronos.egl.EGLConfig
@@ -20,10 +18,10 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     //private val scene = Scene()
     private val uniformFillingVisitor = UniformFillingVisitor()
     private val meshRenderers = ArrayList<MeshRendererComponent>()
-    private val directionalLights = ArrayList<DirectionalLightComponent>()
-    private val camera = PerspectiveCameraComponent()
+    //private val directionalLights = ArrayList<DirectionalLightComponent>()
+    //private val camera = PerspectiveCameraComponent()
 
-    private val ambientColor = Vector3f()
+    /*private val ambientColor = Vector3f()
 
     private var shader: Shader? = null
 
@@ -50,7 +48,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         void main() {
             gl_FragColor = colorUniform + vec4(normal, 1);
         }
-    """.trimIndent()
+    """.trimIndent()*/
 
     private var ambientShader: Shader? = null
     private var directionalLightShader: Shader? = null
@@ -61,7 +59,9 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     override fun onDrawFrame(gl: GL10) {
         if (exposedMeshQueue.size != 0) {
             meshRenderers.clear()
-            val meshRenderer = MeshRendererComponent(uniformFillingVisitor) { camera }
+            val meshRenderer = MeshRendererComponent(uniformFillingVisitor) {
+                viewerScene.camera.getComponent(PerspectiveCameraComponent::class.java)
+            }
             meshRenderers += meshRenderer
             viewerScene.exposeMesh(exposedMeshQueue.take(), meshRenderer)
             controller.currentExposedObject = viewerScene.getExposedObject()
@@ -82,7 +82,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glDepthFunc(GLES20.GL_EQUAL)
         GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE)
 
-        for (directionalLight in directionalLights) {
+        for (directionalLight in viewerScene.directionalLights) {
             for (renderer in meshRenderers) {
                 renderer.currentShader = directionalLightShader
                 uniformFillingVisitor.currentDirectionalLight = directionalLight
@@ -98,7 +98,10 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
     override fun onSurfaceChanged(gl: GL10, width: Int, height: Int) {
         GLES20.glViewport(0, 0, width, height)
 
-        camera.config = PerspectiveCameraComponent.Config(90f, width.toFloat() / height.toFloat())
+        viewerScene
+            .camera
+            .getComponent(PerspectiveCameraComponent::class.java)
+            ?.config = PerspectiveCameraComponent.Config(90f, width.toFloat() / height.toFloat())
     }
 
     override fun onSurfaceCreated(gl: GL10, config: EGLConfig) {
@@ -109,8 +112,8 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
         GLES20.glEnable(GLES20.GL_CULL_FACE)
         GLES20.glEnable(GLES20.GL_DEPTH_TEST)
 
-        ambientColor.set(0.1f, 0.1f, 0.1f)
-        uniformFillingVisitor.currentAmbientColor = ambientColor
+        /*ambientColor.set(0.1f, 0.1f, 0.1f)
+        uniformFillingVisitor.currentAmbientColor = ambientColor*/
 
         /*val rootObject = SceneObject()
 
@@ -174,7 +177,7 @@ class GLSurfaceViewRenderer(private val context: Context) : GLSurfaceView.Render
 
         controller.currentCamera = viewerScene.camera
 
-        shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
+        //shader = SimpleShader(vertexShaderCode, fragmentShaderCode)
 
         ambientShader = AmbientShader(
             context.assets.open("vertexShader.glsl").readBytes().toString(Charset.defaultCharset()),

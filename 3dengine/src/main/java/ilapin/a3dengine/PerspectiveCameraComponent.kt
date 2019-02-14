@@ -14,7 +14,7 @@ class PerspectiveCameraComponent: CameraComponent() {
     var config: Config? = null
         set(value) {
             if (value != null) {
-                projectionMatrix.perspective(
+                projectionMatrix.identity().perspective(
                     Math.toRadians(value.fieldOfView.toDouble()).toFloat(),
                     value.aspect,
                     0.1f,
